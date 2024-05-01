@@ -7,6 +7,7 @@ const { PORT = 3000 } = process.env;
 // TODO - require express-openid-connect and destructure auth from it
 
 const { User, Cupcake } = require('./db');
+const { auth } = require('express-openid-connect');
 
 // middleware
 app.use(cors());
@@ -20,6 +21,26 @@ app.use(express.urlencoded({extended:true}));
   // define the config object
   // attach Auth0 OIDC auth router
   // create a GET / route handler that sends back Logged in or Logged out
+
+const {
+  AUTH0_SECRET,
+  AUTH0_AUDIENCE,
+  AUTH0_CLIENT_ID,
+  AUTH0_BASE_URL
+  } = process.env;
+  
+const config = {
+  authRequired: true, // this is different from the documentation
+  auth0Logout: true,
+  secret: AUTH0_SECRET,
+  baseURL: AUTH0_AUDIENCE,
+  clientID: AUTH0_CLIENT_ID,
+  issuerBaseURL: AUTH0_BASE_URL,
+};
+
+app.use(auth(config));
+
+
 
 app.get('/cupcakes', async (req, res, next) => {
   try {
